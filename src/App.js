@@ -1,153 +1,119 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import MovieRow from './Components/MovieRow/MovieRow';
-import $ from 'jquery';
-
+import MovieList from './components/MovieList';
+import MovieListHeading from './components/MovieListHeading';
+import SearchBox from './components/SearchBox';
+import AddFavourites from './components/AddFavourites';
+import RemoveFavourites from './components/RemoveFavourites';
+import Button from './components/Button';
+import AddModal from './components/AddModal';
 
 const App = () => {
+	const [movies, setMovies] = useState([]);
+	const [moviesDB, setMoviesDB] = useState([{
+		title: "titulo",
+		genre: "genero",
+		description: "description"
+	}, {
+		title: "tirulo 2",
+		genre: "genero 2",
+		description: "description 2"
+	}]);
+	const [favourites, setFavourites] = useState([]);
+	const [searchValue, setSearchValue] = useState('');
+	const [modalAddMovie, setModalAddMovie] = useState(false);
 
-  const searchChangeHandler = event => {
-    const boundObject = this;
-    const searchTerm = event.target.value;
-    boundObject.performSearch(searchTerm)
-  }
+	const getMovieRequest = async (searchValue) => {
+		const url = `http://www.omdbapi.com/?s=${searchValue}&apikey=263d22d8`;
 
+		const response = await fetch(url);
+		const responseJson = await response.json();
 
-  const performSearch = searchTerm => {
-    console.log("Perform search using moviedb")
-    const urlString = "https://api.themoviedb.org/3/search/movie?api_key=1b5adf76a72a13bad99b8fc0c68cb085&query=" + searchTerm
-    $.ajax({
-      url: urlString,
-      success: (searchResults) => {
-        console.log("Fetched data successfully")
-        // console.log(searchResults)
-        const results = searchResults.results
-        // console.log(results[0])
+		if (responseJson.Search) {
+			setMovies(responseJson.Search);
+		}
+	};
 
-        var movieRows = []
+	useEffect(() => {
+		getMovieRequest(searchValue);
+	}, [searchValue]);
 
-        results.forEach((movie) => {
-          movie.poster_src = "https://image.tmdb.org/t/p/w185" + movie.poster_path
-          // console.log(movie.poster_path)
-          const movieRow = <MovieRow key={movie.id} movie={movie}/>
-          movieRows.push(movieRow)
-        })
+	useEffect(() => {
+		const movieFavourites = JSON.parse(
+			localStorage.getItem('react-movie-app-favourites')
+		);
 
-        this.setState({rows: movieRows})
-      },
-      error: (xhr, status, err) => {
-        console.error("Failed to fetch data");
-      } 
-    })
-  }
+		if (movieFavourites) {
+			setFavourites(movieFavourites);
+		}
+	}, []);
 
-  return (
-    <div>
-      
-      <table className="titleBar">
-        <tbody>
-          <tr>
-            <td>
-              <img alt="app icon" width="50" src="green_app_icon.svg"/>
-            </td>
-            <td width="8"/>
-            <td>
-              <h1>MoviesDB Search</h1>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+	const saveToLocalStorage = (items) => {
+		localStorage.setItem('react-movie-app-favourites', JSON.stringify(items));
+	};
 
-      {/* <input style={{
-        fontSize: 24,
-        display: 'block',
-        width: "99%",
-        paddingTop: 8,
-        paddingBottom: 8,
-        paddingLeft: 16
-      }} onChange={this.searchChangeHandler.bind(this)} placeholder="Enter search term"/> */}
+	const addFavouriteMovie = (movie) => {
+		const newFavouriteList = [...favourites, movie];
+		setFavourites(newFavouriteList);
+		saveToLocalStorage(newFavouriteList);
+	};
 
-      {this.state.rows}
+	const removeFavouriteMovie = (movie) => {
+		const newFavouriteList = favourites.filter(
+			(favourite) => favourite.imdbID !== movie.imdbID
+		);
 
-    </div>
-  );
-}
+		setFavourites(newFavouriteList);
+		saveToLocalStorage(newFavouriteList);
+	};
+	
+	const addMovieModalHandler = () => {
+		setModalAddMovie(true);
+	}
 
-// class App extends Component {
+	const addMovieHandler = (movieTitle, genre, description) => {
+		const newMovie = {title: movieTitle, genre: genre, description: description};
+		const newMoviesList = [...moviesDB, newMovie];
+		setMoviesDB(newMoviesList)
+		setModalAddMovie(false);
+	}
 
-//   constructor(props) {
-//     super(props)
-//     this.state = {}
-//     this.performSearch("ant man")
-//   }
+	const exitAddMovieHandler = () => {
+		setModalAddMovie(false);
+	}
 
-//   performSearch(searchTerm) {
-//     console.log("Perform search using moviedb")
-//     const urlString = "https://api.themoviedb.org/3/search/movie?api_key=1b5adf76a72a13bad99b8fc0c68cb085&query=" + searchTerm
-//     $.ajax({
-//       url: urlString,
-//       success: (searchResults) => {
-//         console.log("Fetched data successfully")
-//         // console.log(searchResults)
-//         const results = searchResults.results
-//         // console.log(results[0])
+	return (
+		<Fragment>
+			{modalAddMovie && <AddModal onConfirm={addMovieHandler} onQuit={exitAddMovieHandler}/>}
+			<div className='container-fluid movie-app'>
+				<div className='row d-flex align-items-center mt-4 mb-4'>
+					<MovieListHeading heading='Base de datos de Peliculas' />
+					<SearchBox searchValue={searchValue} setSearchValue={setSearchValue} />
+					<Button type="submit" onClick={addMovieModalHandler}>Añadir pelicula</Button>
 
-//         var movieRows = []
-
-//         results.forEach((movie) => {
-//           movie.poster_src = "https://image.tmdb.org/t/p/w185" + movie.poster_path
-//           // console.log(movie.poster_path)
-//           const movieRow = <MovieRow key={movie.id} movie={movie}/>
-//           movieRows.push(movieRow)
-//         })
-
-//         this.setState({rows: movieRows})
-//       },
-//       error: (xhr, status, err) => {
-//         console.error("Failed to fetch data")
-//       }
-//     })
-//   }
-
-//   searchChangeHandler(event) {
-//     console.log(event.target.value)
-//     const boundObject = this
-//     const searchTerm = event.target.value
-//     boundObject.performSearch(searchTerm)
-//   }
-
-//   render() {
-//     return (
-//       <div>
-        
-//         <table className="titleBar">
-//           <tbody>
-//             <tr>
-//               <td>
-//                 <img alt="app icon" width="50" src="green_app_icon.svg"/>
-//               </td>
-//               <td width="8"/>
-//               <td>
-//                 <h1>MoviesDB Search</h1>
-//               </td>
-//             </tr>
-//           </tbody>
-//         </table>
-
-//         <input style={{
-//           fontSize: 24,
-//           display: 'block',
-//           width: "99%",
-//           paddingTop: 8,
-//           paddingBottom: 8,
-//           paddingLeft: 16
-//         }} onChange={this.searchChangeHandler.bind(this)} placeholder="Enter search term"/>
-
-//         {this.state.rows}
-
-//       </div>
-//     );
-//   }
-// }
+					{/* <AddMovieBar heading='Añadir peliculas'/> */}
+				</div>
+				<div className='row'>
+					<MovieList
+						movies={moviesDB}
+						handleFavouritesClick={addFavouriteMovie}
+						favouriteComponent={AddFavourites}
+					/>
+				</div>
+				<div className='row d-flex align-items-center mt-4 mb-4'>
+					<MovieListHeading heading='Prestadas' />
+				</div>
+				<div className='row'>
+					<MovieList
+						movies={favourites}
+						handleFavouritesClick={removeFavouriteMovie}
+						favouriteComponent={RemoveFavourites}
+					/>
+				</div>
+			</div>
+		</Fragment>
+	);
+};
 
 export default App;
