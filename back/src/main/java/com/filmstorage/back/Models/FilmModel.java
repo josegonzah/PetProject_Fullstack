@@ -12,6 +12,7 @@ public class FilmModel {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(unique = true, nullable = false)
     private Long id;
+    @Column(unique = true, nullable = false)
     private String name;
     private String genre;
     private String description;
