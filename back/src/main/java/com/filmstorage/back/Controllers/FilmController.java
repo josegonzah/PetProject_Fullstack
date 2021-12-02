@@ -57,11 +57,19 @@ public class FilmController {
 
     @GetMapping(value = "film/name")
     public Optional<FilmModel> getFilmByName(@RequestParam("Name") String name){
-        return filmService.getByName(name);
+        name = name.replace('-', ' ');
+        return filmService.getByName(name.toLowerCase());
     }
 
     @GetMapping(value = "film/genre")
     public ArrayList<FilmModel> getFilmByGenre(@RequestParam("Genre") String genre){
-        return filmService.getByGenre(genre);
+        genre = genre.replace('-', ' ');
+        return filmService.getByGenre(genre.toLowerCase());
+    }
+
+    @GetMapping(value = "film/similarity")
+    public ArrayList<FilmModel> getFilmBySimilarityName(@RequestParam("Simil") String name) {
+        name = name.replace('-', ' ');
+        return filmService.getBySimilarityName(name.toLowerCase());        
     }
 }
