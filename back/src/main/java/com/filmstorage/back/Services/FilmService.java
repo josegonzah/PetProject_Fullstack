@@ -53,6 +53,12 @@ public class FilmService {
         return filmUpdate;
     }
 
-    
+    public Optional<FilmModel> getByName(String name){
+        return filmRepository.findByName(name);
+    }
+
+    public ArrayList<FilmModel> getByGenre(String genre){
+        return filmRepository.findByGenre(genre);
+    }
 
 }

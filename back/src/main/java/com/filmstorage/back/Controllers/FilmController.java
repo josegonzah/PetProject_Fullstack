@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -52,5 +53,15 @@ public class FilmController {
     @PutMapping(value = "/{Id}/film")
     public FilmModel updateFilm(@RequestBody FilmModel film, @PathVariable("Id") Long id){
         return filmService.updateFilm(id, film);
+    }
+
+    @GetMapping(value = "film/name")
+    public Optional<FilmModel> getFilmByName(@RequestParam("Name") String name){
+        return filmService.getByName(name);
+    }
+
+    @GetMapping(value = "film/genre")
+    public ArrayList<FilmModel> getFilmByGenre(@RequestParam("Genre") String genre){
+        return filmService.getByGenre(genre);
     }
 }
