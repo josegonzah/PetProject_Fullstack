@@ -61,4 +61,15 @@ public class FilmService {
         return filmRepository.findByGenre(genre);
     }
 
+    public ArrayList<FilmModel> getBySimilarityName(String nameSimilarity){
+        ArrayList<FilmModel> films = this.getFilms();
+        ArrayList<FilmModel> similarity = new ArrayList<FilmModel>();
+        for (FilmModel filmModel : films) {
+            if (filmModel.getName().contains(nameSimilarity)) {
+                similarity.add(filmModel);
+            }
+        }
+
+        return similarity;
+    }
 }
