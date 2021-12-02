@@ -9,13 +9,16 @@ import RemoveFavourites from './components/RemoveFavourites';
 import Button from './components/Button';
 import AddModal from './components/AddModal';
 
-const App = () => {
+const HOST_API = "http://localhost:8080/api";
+const App = () => { 
 	const [movies, setMovies] = useState([]);
 	const [moviesDB, setMoviesDB] = useState([{
+		id: 1,
 		title: "titulo",
 		genre: "genero",
 		description: "description"
 	}, {
+		id: 2,
 		title: "tirulo 2",
 		genre: "genero 2",
 		description: "description 2"
@@ -33,6 +36,8 @@ const App = () => {
 		if (responseJson.Search) {
 			setMovies(responseJson.Search);
 		}
+		var movieNameToAPI = searchValue.split(' ').join('_').toLowerCase();
+		console.log(movieNameToAPI);
 	};
 
 	useEffect(() => {
@@ -61,7 +66,7 @@ const App = () => {
 
 	const removeFavouriteMovie = (movie) => {
 		const newFavouriteList = favourites.filter(
-			(favourite) => favourite.imdbID !== movie.imdbID
+			(favourite) => favourite.id !== movie.id
 		);
 
 		setFavourites(newFavouriteList);
@@ -77,6 +82,11 @@ const App = () => {
 		const newMoviesList = [...moviesDB, newMovie];
 		setMoviesDB(newMoviesList)
 		setModalAddMovie(false);
+		fetch(HOST_API + '/film', { 
+			method: 'POST',
+			body: JSON.stringify({name: movieTitle, genre: genre, description: description}),
+			headers: {'Content-Type': 'application/json'}
+		})
 	}
 
 	const exitAddMovieHandler = () => {
