@@ -2,7 +2,7 @@ import React from 'react';
 import classes from './MovieList.module.css';
 
 const MovieList = (props) => {
-	const FavouriteComponent = props.favouriteComponent;
+	const BorrowedComponent = props.borrowedComponent;
 
 	return (
 		<>
@@ -16,7 +16,7 @@ const MovieList = (props) => {
 						onClick={() => props.handleFavouritesClick(movie)}
 						// className='overlay d-flex align-items-center justify-content-center'
 					>
-						<FavouriteComponent />
+						<BorrowedComponent />
 					</div>
 				</div>
 			))}

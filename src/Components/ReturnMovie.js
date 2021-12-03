@@ -1,6 +1,6 @@
 import React from 'react';
 
-const RemoveFavourites = () => {
+const ReturnMovie = () => {
 	return (
 		<>
 			<span className='mr-2'>Devolver</span>
@@ -25,4 +25,4 @@ const RemoveFavourites = () => {
 	);
 };
 
-export default RemoveFavourites;
+export default ReturnMovie;
