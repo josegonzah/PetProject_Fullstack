@@ -14,12 +14,12 @@ const App = () => {
 	const [movies, setMovies] = useState([]);
 	const [moviesDB, setMoviesDB] = useState([{
 		id: 1,
-		title: "titulo",
+		name: "titulo",
 		genre: "genero",
 		description: "description"
 	}, {
 		id: 2,
-		title: "tirulo 2",
+		name: "tirulo 2",
 		genre: "genero 2",
 		description: "description 2"
 	}]);
@@ -28,16 +28,41 @@ const App = () => {
 	const [modalAddMovie, setModalAddMovie] = useState(false);
 
 	const getMovieRequest = async (searchValue) => {
-		const url = `http://www.omdbapi.com/?s=${searchValue}&apikey=263d22d8`;
+
+		var movieNameToAPI = searchValue.split(' ').join('-').toLowerCase();
+		console.log(movieNameToAPI);
+		const url = `http://localhost:8080/api/film/similarity?Simil=${movieNameToAPI}`;
+		const urlGenre = `http://localhost:8080/api/film/genre?Genre=${movieNameToAPI}`;
 
 		const response = await fetch(url);
+		const responseGenre = await fetch(urlGenre);
 		const responseJson = await response.json();
+		const responseJsonGenre = await responseGenre.json();
+		console.log(responseJson);
 
-		if (responseJson.Search) {
-			setMovies(responseJson.Search);
+		if (responseJson) {
+			setMoviesDB(responseJson);
 		}
-		var movieNameToAPI = searchValue.split(' ').join('_').toLowerCase();
-		console.log(movieNameToAPI);
+
+		if(responseJsonGenre){
+			const movieGenreDB = [...responseJson, ...responseJsonGenre]
+			setMoviesDB(movieGenreDB);
+		}
+		// fetch(HOST_API + '/film/similarity?' + movieNameToAPI)
+		// .then((response) => {
+		// 	return response.json();
+		// }).then((data) => {
+		// 	const fetchedMovieList = data.map((moviesData) => {
+		// 		return{
+		// 			id: moviesData.id,
+		// 			title: moviesData.name,
+		// 			description: moviesData.description,
+		// 			genre: moviesData.genre,
+		// 			duration: moviesData.duration
+		// 		};
+		// 	});
+		// 	setMoviesDB(fetchedMovieList);
+		// })
 	};
 
 	useEffect(() => {
@@ -78,7 +103,7 @@ const App = () => {
 	}
 
 	const addMovieHandler = (movieTitle, genre, description) => {
-		const newMovie = {title: movieTitle, genre: genre, description: description};
+		const newMovie = {name: movieTitle, genre: genre, description: description};
 		const newMoviesList = [...moviesDB, newMovie];
 		setMoviesDB(newMoviesList)
 		setModalAddMovie(false);
