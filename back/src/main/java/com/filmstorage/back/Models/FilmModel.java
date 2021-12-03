@@ -17,6 +17,7 @@ public class FilmModel {
     private String genre;
     private String description;
     private Integer duration;
+    private Boolean borrow;
     
     public Long getId() {
         return id;
@@ -48,7 +49,11 @@ public class FilmModel {
     public void setDuration(Integer duration) {
         this.duration = duration;
     }
-    
-    
+    public Boolean getBorrow() {
+        return borrow;
+    }
+    public void setBorrow(Boolean borrow) {
+        this.borrow = borrow;
+    }
 }
 

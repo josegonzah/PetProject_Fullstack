@@ -47,7 +47,8 @@ public class FilmService {
         filmUpdate.setDuration(film.getDuration());
         filmUpdate.setGenre(film.getGenre());
         filmUpdate.setName(film.getName());
-
+        filmUpdate.setBorrow(film.getBorrow());
+        
         filmRepository.save(filmUpdate);
 
         return filmUpdate;
