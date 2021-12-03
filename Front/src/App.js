@@ -46,6 +46,10 @@ const App = () => {
 			localStorage.getItem('react-movie-app-favourites')
 		);
 
+		const movieBorrowedBack = moviesDB.filter(
+			(borrowed) => borrowed.borrow === true
+		);
+
 		if (movieBorrowed) {
 			setBorrowed(movieBorrowed);
 		}
@@ -53,21 +57,32 @@ const App = () => {
 
 	const saveToLocalStorage = (items) => {
 		localStorage.setItem('react-movie-app-favourites', JSON.stringify(items));
+
 	};
 
 	const borrowMovie = (movie) => {
 		const newFavouriteList = [...borrowed, movie];
 		setBorrowed(newFavouriteList);
 		saveToLocalStorage(newFavouriteList);
+		fetch(HOST_API + '/' + movie.id +'/film', {
+			method: 'PUT',
+			body: JSON.stringify({name: movie.name, genre: movie.genre, description: movie.description, borrow: true}),
+			headers: { 'Content-Type': 'application/json'}
+		  })
 	};
 
 	const returnMovie = (movie) => {
 		const newFavouriteList = borrowed.filter(
 			(favourite) => favourite.id !== movie.id
 		);
-
 		setBorrowed(newFavouriteList);
 		saveToLocalStorage(newFavouriteList);
+		fetch(HOST_API + '/' + movie.id +'/film', {
+			method: 'PUT',
+			body: JSON.stringify({name: movie.name, genre: movie.genre, description: movie.description, borrow: false}),
+			headers: { 'Content-Type': 'application/json'}
+		  })
+
 	};
 	
 	const addMovieModalHandler = () => {
@@ -81,7 +96,7 @@ const App = () => {
 		setModalAddMovie(false);
 		fetch(HOST_API + '/film', { 
 			method: 'POST',
-			body: JSON.stringify({name: movieTitle, genre: genre, description: description}),
+			body: JSON.stringify({name: movieTitle, genre: genre, description: description, borrow: false}),
 			headers: {'Content-Type': 'application/json'}
 		})
 	}
