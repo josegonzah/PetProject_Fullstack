@@ -65,7 +65,7 @@ public class FilmService {
         ArrayList<FilmModel> films = this.getFilms();
         ArrayList<FilmModel> similarity = new ArrayList<FilmModel>();
         for (FilmModel filmModel : films) {
-            if (filmModel.getName().contains(nameSimilarity)) {
+            if (filmModel.getName().toLowerCase().contains(nameSimilarity)) {
                 similarity.add(filmModel);
             }
         }
